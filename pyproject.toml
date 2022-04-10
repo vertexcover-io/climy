@@ -4,6 +4,23 @@ version = "0.0.1"
 description = "CLI Made Easy"
 authors = ["Ritesh Kadmawala <ritesh@vertexcover.io>"]
 
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
 [tool.poetry.dependencies]
 python = "^3.9"
 
