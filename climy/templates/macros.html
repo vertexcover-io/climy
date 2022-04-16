@@ -1,0 +1,39 @@
+{% macro required(is_required) -%}
+  {{ "required" if is_required }}
+{%- endmacro %}
+
+{% macro parameter_title(name, is_required) -%}
+  {{ param.name | capitalize }}
+  {% if not is_required %}
+    <span class="text-muted">(Optional)</span>
+  {% endif %}
+{%- endmacro %}
+
+
+{% macro parameter_id(name) -%}
+  {{ param.name | lower }}
+{%- endmacro %}
+
+
+{% macro input_type(param_type) -%}
+  {% if param_type == "string" %}
+    "text"
+  {% elif param_type == "int" or param_type = "float" %}
+    "number"
+  {% endif %}
+{%- endmacro %}
+
+{% macro parameter_help(help) -%}
+  {% if help %}
+    <div class="form-text">
+      {{help}}
+    </div>
+  {% endif %}
+{%- endmacro %}
+
+
+{% macro validation_feedback(msg) -%}
+  <div class="invalid-feedback">
+    {{msg}}
+  </div>
+{%- endmacro %}

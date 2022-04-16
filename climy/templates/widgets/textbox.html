@@ -1,0 +1,14 @@
+{% from 'macros.html' import required, parameter_title, input_type,
+                             parameter_id, parameter_help, validaton_feedback %}
+<label for="{{parameter_id(param.name)}}" class="form-label {{required(param.required)}}">
+  {{parameter_title(param.name, param.required)}}
+</label>
+<input type="{{input_type(param.type_)}}"
+       class="form-control"
+       id="{{parameter_id(param.name)}}"
+       placeholder=""
+       value="{{param.default}}"
+       {{required(param.required)}}>
+
+{{parameter_help(help)}}
+{{validation_feedback()}}
