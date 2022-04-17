@@ -1,18 +1,22 @@
+from typing import Union
+
 import click.types
 from click.core import Command as ClickCommand
 from click.core import Parameter as ClickParameter
 
-from climy.type import Command, Parameter, ParamType
+from climy.types import Command, Parameter, ParamType
+
+SupportedCommand = Union[ClickCommand]
 
 
 def parse_click_param_type(param_type: click.types.ParamType) -> ParamType:
-    if isinstance(param_type, click.types.STRING):
+    if isinstance(param_type, click.types.StringParamType):
         return ParamType.String
-    elif isinstance(param_type, click.types.INT):
+    elif isinstance(param_type, click.types.IntParamType):
         return ParamType.Int
-    elif isinstance(param_type, click.types.FLOAT):
+    elif isinstance(param_type, click.types.FloatParamType):
         return ParamType.Float
-    elif isinstance(param_type, click.types.BOOL):
+    elif isinstance(param_type, click.types.BoolParamType):
         return ParamType.Bool
     elif isinstance(param_type, click.types.Choice):
         return ParamType.Choice
@@ -65,3 +69,10 @@ def parse_click_command(
         params=params,
         subcommands=subcommands,
     )
+
+
+def parse_command(sup_cmd: SupportedCommand):
+    if isinstance(sup_cmd, ClickCommand):
+        return parse_click_command(sup_cmd)
+
+    raise RuntimeError(f"CLI Command of type: {type(sup_cmd)} not supported yet ")

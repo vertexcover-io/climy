@@ -41,7 +41,7 @@ class Parameter:
     name: str
     human_readable_name: str
     decl: str
-    type_: ParamType = field(default=ParamType.STRING)
+    type_: ParamType = field(default=ParamType.String)
     widget: Widget = field(init=False)
     help: str = field(default=None)
     default: Any = field(default=None)
