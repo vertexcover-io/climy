@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
 from typing import Any, Optional
 
 
@@ -32,7 +31,7 @@ class LoaderType(Enum):
 @dataclass
 class Widget:
     name: str
-    path: Path
+    path: str
     loader: LoaderType = LoaderType.Jinja
 
 
@@ -64,13 +63,13 @@ class Command:
     is_runnable: bool = field(default=True)
 
 
-Textbox = Widget("Text", Path("widgets/textbox.html"))
-Checkbox = Widget("Checkbox", Path("widgets/checkbox.html"))
-Selector = Widget("Select", Path("widgets/selector.html"))
-DatetimePicker = Widget("Select", Path("widgets/datetime-picker.html"))
-FilePicker = Widget("Select", Path("widgets/file-picker.html"))
-NumericRange = Widget("Select", Path("widgets/numeric-range.html"))
-DatetimeRangePicker = Widget("Select", Path("widgets/datetime-range-picker.html"))
+Textbox = Widget("Text", "widgets/textbox.html")
+Checkbox = Widget("Checkbox", "widgets/checkbox.html")
+Selector = Widget("Select", "widgets/selector.html")
+DatetimePicker = Widget("Select", "widgets/datetime-picker.html")
+FilePicker = Widget("Select", "widgets/file-picker.html")
+NumericRange = Widget("Select", "widgets/numeric-range.html")
+DatetimeRangePicker = Widget("Select", "widgets/datetime-range-picker.html")
 
 
 def get_widget_for_param(param: Parameter) -> Widget:

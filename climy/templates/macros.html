@@ -3,22 +3,28 @@
 {%- endmacro %}
 
 {% macro parameter_title(name, is_required) -%}
-  {{ param.name | capitalize }}
+  {{ name | capitalize | replace("_", " ") | trim  }}
   {% if not is_required %}
     <span class="text-muted">(Optional)</span>
   {% endif %}
 {%- endmacro %}
 
+{% macro command_title(name) -%}
+  {{ name | capitalize | replace("_", " ") | trim }}
+{%- endmacro %}
+
 
 {% macro parameter_id(name) -%}
-  {{ param.name | lower }}
+  {{ name | lower }}
 {%- endmacro %}
 
 
 {% macro input_type(param_type) -%}
   {% if param_type == "string" %}
     "text"
-  {% elif param_type == "int" or param_type = "float" %}
+  {% elif param_type == "int" %}
+    "number"
+  {% elif param_type == "float" %}
     "number"
   {% endif %}
 {%- endmacro %}
@@ -36,4 +42,9 @@
   <div class="invalid-feedback">
     {{msg}}
   </div>
+{%- endmacro %}
+
+
+{% macro render_widget(param)  -%}
+  {% include param.widget.path %}
 {%- endmacro %}
