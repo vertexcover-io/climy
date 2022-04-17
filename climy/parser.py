@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Union
 
 import click.types
 from click.core import Command as ClickCommand
@@ -31,13 +31,14 @@ def parse_click_param_type(param_type: click.types.ParamType) -> ParamType:
         return ParamType.Tuple
     elif isinstance(param_type, (click.types.Path, click.types.File)):
         return ParamType.File
-    elif isinstance(param_type, click.types.UUID):
+    elif isinstance(param_type, click.types.UUIDParameterType):
         return ParamType.Uuid
     else:
         return ParamType.Unknown
 
 
 def parse_click_parameter(param: ClickParameter) -> Parameter:
+    assert param.name is not None
     return Parameter(
         name=param.name,
         human_readable_name=param.human_readable_name,
@@ -52,7 +53,7 @@ def parse_click_parameter(param: ClickParameter) -> Parameter:
 
 
 def parse_click_command(
-    cmd: ClickCommand, group_params: list[Parameter] = None
+    cmd: ClickCommand, group_params: Optional[list[Parameter]] = None
 ) -> Command:
     params = [parse_click_parameter(p) for p in (cmd.params or [])]
     group_params = group_params or []
@@ -60,6 +61,7 @@ def parse_click_command(
         parse_click_command(c, group_params=params + group_params)
         for c in getattr(cmd, "commands", [])
     ]
+    assert cmd.name is not None
     return Command(
         name=cmd.name,
         help=cmd.help,
@@ -71,7 +73,7 @@ def parse_click_command(
     )
 
 
-def parse_command(sup_cmd: SupportedCommand):
+def parse_command(sup_cmd: SupportedCommand) -> Command:
     if isinstance(sup_cmd, ClickCommand):
         return parse_click_command(sup_cmd)
 

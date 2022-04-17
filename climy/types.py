@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
 
 class ParamType(Enum):
@@ -43,13 +43,13 @@ class Parameter:
     decl: str
     type_: ParamType = field(default=ParamType.String)
     widget: Widget = field(init=False)
-    help: str = field(default=None)
+    help: Optional[str] = field(default=None)
     default: Any = field(default=None)
     required: bool = field(default=False)
     count: int = field(default=1)
     multiple: bool = field(default=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self.widget = get_widget_for_param(self)
 
 
@@ -59,18 +59,18 @@ class Command:
     params: list[Parameter] = field(default_factory=list)
     group_params: list[Parameter] = field(default_factory=list)
     subcommands: list["Command"] = field(default_factory=list)
-    help: str = field(default=None)
-    epilog: str = field(default=None)
+    help: Optional[str] = field(default=None)
+    epilog: Optional[str] = field(default=None)
     is_runnable: bool = field(default=True)
 
 
-Textbox = Widget("Text", "widgets/textbox.html")
-Checkbox = Widget("Checkbox", "widgets/checkbox.html")
-Selector = Widget("Select", "widgets/selector.html")
-DatetimePicker = Widget("Select", "widgets/datetime-picker.html")
-FilePicker = Widget("Select", "widgets/file-picker.html")
-NumericRange = Widget("Select", "widgets/numeric-range.html")
-DatetimeRangePicker = Widget("Select", "widgets/datetime-range-picker.html")
+Textbox = Widget("Text", Path("widgets/textbox.html"))
+Checkbox = Widget("Checkbox", Path("widgets/checkbox.html"))
+Selector = Widget("Select", Path("widgets/selector.html"))
+DatetimePicker = Widget("Select", Path("widgets/datetime-picker.html"))
+FilePicker = Widget("Select", Path("widgets/file-picker.html"))
+NumericRange = Widget("Select", Path("widgets/numeric-range.html"))
+DatetimeRangePicker = Widget("Select", Path("widgets/datetime-range-picker.html"))
 
 
 def get_widget_for_param(param: Parameter) -> Widget:
