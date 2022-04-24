@@ -242,6 +242,14 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "sarge"
+version = "0.1.7.post1"
+description = "A wrapper for subprocess which provides command pipeline functionality."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -303,7 +311,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "91821eb4cf6990e927e9f23511819cb86cd5a673c8f10a5bd105ff79a55abf47"
+content-hash = "4d35e28e12f2ab433ffdb2f23c2f97ec169565dbf917048b1ab7430d90fd2c90"
 
 [metadata.files]
 appnope = [
@@ -448,6 +456,10 @@ pure-eval = [
 pygments = [
     {file = "Pygments-2.11.2-py3-none-any.whl", hash = "sha256:44238f1b60a76d78fc8ca0528ee429702aae011c265fe6a8dd8b63049ae41c65"},
     {file = "Pygments-2.11.2.tar.gz", hash = "sha256:4e426f72023d88d03b2fa258de560726ce890ff3b630f88c21cbb8b2503b8c6a"},
+]
+sarge = [
+    {file = "sarge-0.1.7.post1-py2.py3-none-any.whl", hash = "sha256:6da81592eac3fdb55708baddaf28deaad3a18f8719e3c082ea3b0405647ae72c"},
+    {file = "sarge-0.1.7.post1.tar.gz", hash = "sha256:64ff42ae6ef90acbded6318ed440ed63b31a669302fb60cf41265debea282a3d"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},

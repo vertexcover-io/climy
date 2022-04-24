@@ -1,40 +1,39 @@
-from typing import Optional, Union
+from typing import Optional
 
 import click.types
 from click.core import Command as ClickCommand
+from click.core import Option as ClickOption
 from click.core import Parameter as ClickParameter
 
-from climy.types import Command, Parameter, ParamType
-
-SupportedCommand = Union[ClickCommand]
+from climy.types import CLIParser, Command, Parameter, ParamType, ParamValueType
 
 
-def parse_click_param_type(param_type: click.types.ParamType) -> ParamType:
+def parse_click_param_type(param_type: click.types.ParamType) -> ParamValueType:
     if isinstance(param_type, click.types.StringParamType):
-        return ParamType.String
+        return ParamValueType.String
     elif isinstance(param_type, click.types.IntParamType):
-        return ParamType.Int
+        return ParamValueType.Int
     elif isinstance(param_type, click.types.FloatParamType):
-        return ParamType.Float
+        return ParamValueType.Float
     elif isinstance(param_type, click.types.BoolParamType):
-        return ParamType.Bool
+        return ParamValueType.Bool
     elif isinstance(param_type, click.types.Choice):
-        return ParamType.Choice
+        return ParamValueType.Choice
     elif isinstance(param_type, click.types.DateTime):
-        return ParamType.Dateime
+        return ParamValueType.Dateime
     elif isinstance(param_type, click.types.IntRange):
-        return ParamType.IntRange
+        return ParamValueType.IntRange
     elif isinstance(param_type, click.types.FloatRange):
-        return ParamType.FloatRange
+        return ParamValueType.FloatRange
 
     elif isinstance(param_type, (click.types.Path, click.types.Tuple)):
-        return ParamType.Tuple
+        return ParamValueType.Tuple
     elif isinstance(param_type, (click.types.Path, click.types.File)):
-        return ParamType.File
+        return ParamValueType.File
     elif isinstance(param_type, click.types.UUIDParameterType):
-        return ParamType.Uuid
+        return ParamValueType.Uuid
     else:
-        return ParamType.Unknown
+        return ParamValueType.Unknown
 
 
 def parse_click_parameter(param: ClickParameter) -> Parameter:
@@ -42,8 +41,11 @@ def parse_click_parameter(param: ClickParameter) -> Parameter:
     return Parameter(
         name=param.name,
         human_readable_name=param.human_readable_name,
+        param_type=ParamType.Option
+        if isinstance(param, ClickOption)
+        else ParamType.Argument,
         decl=param.opts[0],
-        type_=parse_click_param_type(param.type),
+        value_type=parse_click_param_type(param.type),
         help=getattr(param, "help", None),
         default=param.default,
         required=param.required,
@@ -73,7 +75,7 @@ def parse_click_command(
     )
 
 
-def parse_command(sup_cmd: SupportedCommand) -> Command:
+def parse_command(sup_cmd: CLIParser) -> Command:
     if isinstance(sup_cmd, ClickCommand):
         return parse_click_command(sup_cmd)
 

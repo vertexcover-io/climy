@@ -1,9 +1,14 @@
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from pathlib import Path
+from typing import Any, Optional, Union
+
+from click.core import Command as ClickCommand
+
+CLIParser = Union[ClickCommand]
 
 
-class ParamType(Enum):
+class ParamValueType(Enum):
     String = "string"
     Int = "int"
     Float = "float"
@@ -24,6 +29,11 @@ class CLIType(Enum):
     Click = "click"
 
 
+class ParamType(Enum):
+    Argument = "argument"
+    Option = "option"
+
+
 class LoaderType(Enum):
     Jinja = "jinja2"
 
@@ -39,8 +49,9 @@ class Widget:
 class Parameter:
     name: str
     human_readable_name: str
-    decl: str
-    type_: ParamType = field(default=ParamType.String)
+    param_type: ParamType
+    decl: Optional[str]
+    value_type: ParamValueType = field(default=ParamValueType.String)
     widget: Widget = field(init=False)
     help: Optional[str] = field(default=None)
     default: Any = field(default=None)
@@ -63,6 +74,29 @@ class Command:
     is_runnable: bool = field(default=True)
 
 
+@dataclass
+class Conifg:
+    src_script: Path
+    parser_type: CLIType
+    command: Command
+    target: list[str] = ["python", "-u"]
+
+
+@dataclass
+class CommandLineArg:
+    name: str
+    values: list[Any]
+    decl: Optional[str] = None
+
+
+@dataclass
+class CommandLine:
+    src_script: Path
+    target: list[str] = field(default_factory=list)
+    commands: list[str] = field(default_factory=list)
+    arguments: list[CommandLineArg] = field(default_factory=list)
+
+
 Textbox = Widget("Text", "widgets/textbox.html")
 Checkbox = Widget("Checkbox", "widgets/checkbox.html")
 Selector = Widget("Select", "widgets/selector.html")
@@ -73,25 +107,25 @@ DatetimeRangePicker = Widget("Select", "widgets/datetime-range-picker.html")
 
 
 def get_widget_for_param(param: Parameter) -> Widget:
-    if param.type_ == ParamType.Bool:
+    if param.value_type == ParamValueType.Bool:
         return Checkbox
-    elif param.type_ == ParamType.Choice:
+    elif param.value_type == ParamValueType.Choice:
         return Selector
-    elif param.type_ in (
-        ParamType.String,
-        ParamType.Int,
-        ParamType.Float,
-        ParamType.Uuid,
-        ParamType.Unknown,
+    elif param.value_type in (
+        ParamValueType.String,
+        ParamValueType.Int,
+        ParamValueType.Float,
+        ParamValueType.Uuid,
+        ParamValueType.Unknown,
     ):
         return Textbox
-    elif param.type_ == ParamType.Dateime:
+    elif param.value_type == ParamValueType.Dateime:
         return DatetimePicker
-    elif param.type_ == ParamType.File:
+    elif param.value_type == ParamValueType.File:
         return FilePicker
-    elif param.type_ == ParamType.DatetimeRange:
+    elif param.value_type == ParamValueType.DatetimeRange:
         return DatetimeRangePicker
-    elif param.type_ in (ParamType.IntRange, ParamType.FloatRange):
+    elif param.value_type in (ParamValueType.IntRange, ParamValueType.FloatRange):
         return NumericRange
     else:
-        raise ValueError(f"No supported widget for {param.type_}")
+        raise ValueError(f"No supported widget for {param.value_type}")
