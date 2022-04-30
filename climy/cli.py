@@ -1,11 +1,14 @@
 import importlib
 import sys
+import webbrowser
+from multiprocessing import Process
 from pathlib import Path
 from typing import Optional
 
 import click
 
 from climy.core import create_user_interface, invoke_command
+from climy.server import start_server
 from climy.types import CommandLine, CommandLineArg
 
 
@@ -14,10 +17,33 @@ def show_error(msg: str) -> None:
     sys.exit(1)
 
 
-@click.command(help="Create a Form UI from a `click` CLI Command")
+@click.group
+def cli():
+    pass
+
+
+@cli.command(help="Create a Form UI from a `click` CLI Command")
+@click.option("-h", "--host", default="0.0.0.0")
+@click.option("-p", "--port", default=8080)
+@click.argument("cli_app")
+def serve(cli_app: str, host: str, port: int):
+    process = Process(
+        target=start_server,
+        kwargs={
+            "cli_app": cli_app,
+            "host": host,
+            "port": port,
+        },
+    )
+    process.start()
+    webbrowser.open(f"{host}:{port}")
+    process.join()
+
+
+@cli.command(help="Create a Form UI from a `click` CLI Command")
 @click.argument("click_app")
 @click.option("-o", "--output-file", help="Output file to store cli ui", required=False)
-def main(click_app: str, output_file: Optional[str] = None) -> None:
+def app_ui(click_app: str, output_file: Optional[str] = None) -> None:
     try:
         module_name, cmd_name = click_app.rsplit(".", 1)
     except ValueError:
@@ -46,7 +72,7 @@ def main(click_app: str, output_file: Optional[str] = None) -> None:
         sys.stdout.write(ui)
 
 
-@click.command(
+@cli.command(
     help="Invoke specified command with args",
     context_settings=dict(
         ignore_unknown_options=True,
@@ -77,4 +103,4 @@ def invoke(app: str, args: list[str]):
 
 
 if __name__ == "__main__":
-    invoke()
+    cli()

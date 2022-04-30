@@ -1,4 +1,4 @@
 if __name__ == "__main__":
-    from climy.cli import main
+    from climy.cli import cli
 
-    main()
+    cli()

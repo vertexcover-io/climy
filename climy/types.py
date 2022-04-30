@@ -75,11 +75,11 @@ class Command:
 
 
 @dataclass
-class Conifg:
+class ExecutionConifg:
     src_script: Path
     parser_type: CLIType
     command: Command
-    target: list[str] = ["python", "-u"]
+    target: list[str] = field(default_factory=lambda: ["python", "-u"])
 
 
 @dataclass
