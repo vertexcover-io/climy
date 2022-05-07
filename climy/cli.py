@@ -2,12 +2,12 @@ import importlib
 import sys
 import webbrowser
 from multiprocessing import Process
-from pathlib import Path
 from typing import Optional
 
 import click
 
 from climy.core import create_user_interface, invoke_command
+from climy.renderer import setup_jinja_env
 from climy.server import start_server
 from climy.types import CommandLine, CommandLineArg
 
@@ -64,7 +64,8 @@ def app_ui(click_app: str, output_file: Optional[str] = None) -> None:
         return show_error(f"Unable to load click command. Command {cmd_name} not found")
     click.echo("Click Command Found")
 
-    ui = create_user_interface(click_cmd)
+    env = setup_jinja_env()
+    ui = create_user_interface(env, click_cmd)
     if output_file is not None:
         with open(output_file, "w") as fd:
             fd.write(ui)
@@ -95,9 +96,7 @@ def invoke(app: str, args: list[str]):
             cmd_args.append(CommandLineArg(name=arg, values=[arg]))
 
     print(cmd_args)
-    cmd_line = CommandLine(
-        target=["python", "-u"], src_script=Path(app), arguments=cmd_args
-    )
+    cmd_line = CommandLine(target=["python", "-u"], src_script=app, arguments=cmd_args)
     for op in invoke_command(cmd_line):
         print(op)
 

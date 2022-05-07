@@ -5,7 +5,14 @@ from click.core import Command as ClickCommand
 from click.core import Option as ClickOption
 from click.core import Parameter as ClickParameter
 
-from climy.types import CLIParser, Command, Parameter, ParamType, ParamValueType
+from climy.types import (
+    CLIParser,
+    CLIParserType,
+    Command,
+    Parameter,
+    ParamType,
+    ParamValueType,
+)
 
 
 def parse_click_param_type(param_type: click.types.ParamType) -> ParamValueType:
@@ -38,29 +45,37 @@ def parse_click_param_type(param_type: click.types.ParamType) -> ParamValueType:
 
 def parse_click_parameter(param: ClickParameter) -> Parameter:
     assert param.name is not None
+    if getattr(param, "multiple", True):
+        count = -1
+    elif param.nargs is None:
+        count = 1
+    else:
+        count = param.nargs
+
     return Parameter(
         name=param.name,
         human_readable_name=param.human_readable_name,
         param_type=ParamType.Option
         if isinstance(param, ClickOption)
         else ParamType.Argument,
-        decl=param.opts[0],
+        decl=param.opts[0] if isinstance(param, ClickOption) else None,
         value_type=parse_click_param_type(param.type),
         help=getattr(param, "help", None),
         default=param.default,
         required=param.required,
-        count=param.nargs,
-        multiple=param.multiple,
+        count=count,
     )
 
 
 def parse_click_command(
-    cmd: ClickCommand, group_params: Optional[list[Parameter]] = None
+    cmd: ClickCommand,
+    parent_cmd: Optional[str] = None,
+    group_params: Optional[list[Parameter]] = None,
 ) -> Command:
     params = [parse_click_parameter(p) for p in (cmd.params or [])]
     group_params = group_params or []
     subcommands = [
-        parse_click_command(c, group_params=params + group_params)
+        parse_click_command(c, group_params=params + group_params, parent_cmd=cmd.name)
         for c in getattr(cmd, "commands", [])
     ]
     assert cmd.name is not None
@@ -72,11 +87,12 @@ def parse_click_command(
         group_params=group_params,
         params=params,
         subcommands=subcommands,
+        parent_cmd=parent_cmd,
     )
 
 
-def parse_command(sup_cmd: CLIParser) -> Command:
+def parse_command(sup_cmd: CLIParser) -> tuple[CLIParserType, Command]:
     if isinstance(sup_cmd, ClickCommand):
-        return parse_click_command(sup_cmd)
+        return CLIParserType.Click, parse_click_command(sup_cmd)
 
     raise RuntimeError(f"CLI Command of type: {type(sup_cmd)} not supported yet ")

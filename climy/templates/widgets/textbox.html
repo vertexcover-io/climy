@@ -1,14 +1,18 @@
-{% from 'macros.html' import required, parameter_title, input_type,
+{% from 'macros.html' import required, parameter_title, input_type, optional_attr,
                              parameter_id, parameter_help, validation_feedback %}
-<label for="{{parameter_id(param.name)}}" class="form-label {{required(param.required)}}">
-  {{parameter_title(param.human_readable_name, param.required)}}
-</label>
-<input type="{{input_type(param.type_)}}"
-       class="form-control"
-       id="{{parameter_id(param.name)}}"
-       placeholder=""
-       value="{{param.default | default("", true)}}"
-       {{required(param.required)}}>
 
-{{parameter_help(param.help)}}
-{{validation_feedback("Invalid " + param.name)}}
+<div>
+  <label for="{{parameter_id(param.name)}}" class="form-label {{required(param.required)}}">
+    {{parameter_title(param.human_readable_name, param.required)}}
+  </label>
+  <input {{input_type(param.value_type)|trim}}
+	 class="form-control"
+	 data-name="{{param.name}}"
+         {{optional_attr("data-decl", param.decl)}}
+	 placeholder=""
+	 value="{{param.default | default("", true)}}"
+	 {{required(param.required)}}
+  />
+  {{parameter_help(param.help)}}
+  {{validation_feedback("Invalid " + param.human_readable_name | label)}}
+</div>

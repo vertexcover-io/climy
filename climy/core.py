@@ -1,15 +1,17 @@
 import subprocess
 from typing import Generator
 
+from jinja2.environment import Environment
+
 from climy.parser import parse_command
 from climy.renderer import render_command
 from climy.types import CLIParser, CommandLine, CommandLineArg
 
 
-def create_user_interface(sup_cmd: CLIParser) -> str:
-    cmd = parse_command(sup_cmd)
+def create_user_interface(env: Environment, sup_cmd: CLIParser) -> str:
+    _, cmd = parse_command(sup_cmd)
     print(cmd)
-    return render_command(cmd)
+    return render_command(env, cmd)
 
 
 def _prepare_cmd_arg(cmd_arg: CommandLineArg) -> list[str]:
@@ -20,7 +22,7 @@ def _prepare_cmd_arg(cmd_arg: CommandLineArg) -> list[str]:
 
 def _prepare_command_line(cmdline: CommandLine) -> list[str]:
     cmds = cmdline.target or []
-    cmds += [cmdline.src_script.as_posix()]
+    cmds += [cmdline.src_script]
     cmds += cmdline.commands[1:] if len(cmdline.commands) > 1 else []
     for arg in cmdline.arguments:
         cmds += _prepare_cmd_arg(arg)

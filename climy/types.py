@@ -1,9 +1,11 @@
-from dataclasses import dataclass, field
-from enum import Enum
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Optional, Union
 
 from click.core import Command as ClickCommand
+from dataclasses_json import dataclass_json
+
+from climy.utils import ExtendedEnum as Enum
 
 CLIParser = Union[ClickCommand]
 
@@ -24,7 +26,7 @@ class ParamValueType(Enum):
     Unknown = "unknown"
 
 
-class CLIType(Enum):
+class CLIParserType(Enum):
     ArgParser = "argparse"
     Click = "click"
 
@@ -57,7 +59,6 @@ class Parameter:
     default: Any = field(default=None)
     required: bool = field(default=False)
     count: int = field(default=1)
-    multiple: bool = field(default=False)
 
     def __post_init__(self) -> None:
         self.widget = get_widget_for_param(self)
@@ -69,19 +70,24 @@ class Command:
     params: list[Parameter] = field(default_factory=list)
     group_params: list[Parameter] = field(default_factory=list)
     subcommands: list["Command"] = field(default_factory=list)
+    parent_cmd: Optional[str] = field(default=None)
     help: Optional[str] = field(default=None)
     epilog: Optional[str] = field(default=None)
     is_runnable: bool = field(default=True)
+
+    def dict(self):
+        return asdict(self)
 
 
 @dataclass
 class ExecutionConifg:
     src_script: Path
-    parser_type: CLIType
+    parser_type: CLIParserType
     command: Command
     target: list[str] = field(default_factory=lambda: ["python", "-u"])
 
 
+@dataclass_json
 @dataclass
 class CommandLineArg:
     name: str
@@ -89,9 +95,10 @@ class CommandLineArg:
     decl: Optional[str] = None
 
 
+@dataclass_json
 @dataclass
 class CommandLine:
-    src_script: Path
+    src_script: str
     target: list[str] = field(default_factory=list)
     commands: list[str] = field(default_factory=list)
     arguments: list[CommandLineArg] = field(default_factory=list)

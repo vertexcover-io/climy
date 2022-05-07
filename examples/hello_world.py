@@ -4,16 +4,18 @@ import click
 
 
 @click.command()
-@click.argument("msg_list", nargs=-1)
+@click.option("-v", "--verbose", count=True)
+@click.argument("msg_list", nargs=-1, required=True)
 @click.option("-s", "--sleep", type=click.FLOAT, default=0.5)
-def hello(msg_list: list[str], sleep: float):
+def hello(msg_list: list[str], sleep: float, verbose: int):
     """
     Print Hello Message
     """
-    print("Hello\n")
+    print(f"verbosity: {verbose}")
+    print("Hello")
     for m in msg_list:
         time.sleep(sleep)
-        print(m)
+        print(m, end=" ", flush=True)
 
 
 if __name__ == "__main__":
