@@ -1,0 +1,20 @@
+<div class="row g-2" >
+  <div class="col">
+    <form class="needs-validation" novalidate data-command="{{cmd.name}}">
+      <div class="row mb-3 justify-content-start">
+	{% for param in cmd.params -%}
+	  {% include param.widget.path %}
+	{% endfor %}
+      </div>
+      <div class="row mb-3 justify-content-center">
+	<div class="col-md-3">
+	  <button
+	    class="btn btn-primary btn-lg"
+	    type="submit"
+	    data-command="{{cmd.name}}"
+	  >Submit</button>
+	</div>
+      </div>
+    </form>
+  </div>
+</div>

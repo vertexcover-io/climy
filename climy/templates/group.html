@@ -1,0 +1,36 @@
+<div>
+  <ul class="nav nav-tabs" id="{{cmd.name}}-tab-container" role="tablist">
+    {% for sc in cmd.subcommands %}
+      <li class="nav-item" role="presentation">
+	<button class="nav-link"
+		id="{{sc.name}}-tab"
+		data-bs-toggle="tab"
+		data-bs-target="#{{sc.name}}-content"
+		type="button"
+		role="tab"
+		aria-controls="{{sc.name}}"
+		aria-selected="true">
+	  {{command_title(sc.name)}}
+	</button>
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="tab-content p-3">
+    {% for sc in cmd.subcommands %}
+      <div class="tab-pane"
+	   id="{{sc.name}}-content"
+	   role="tabpanel"
+	   aria-labelledby="{{sc.name}}-tab">
+
+	{% if sc.help %}
+	  <p class="lead">{{sc.help | d('')}}</p>
+	{% endif %}
+	{% with cmd=sc %}
+	  <div class="mt-2">
+	    {% include 'argForm.html' %}
+	  </div>
+	{% endwith %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

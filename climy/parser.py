@@ -74,9 +74,10 @@ def parse_click_command(
 ) -> Command:
     params = [parse_click_parameter(p) for p in (cmd.params or [])]
     group_params = group_params or []
+    subcmd_list = cmd.commands.values() if hasattr(cmd, "commands") else {}
     subcommands = [
         parse_click_command(c, group_params=params + group_params, parent_cmd=cmd.name)
-        for c in getattr(cmd, "commands", [])
+        for c in subcmd_list
     ]
     assert cmd.name is not None
     return Command(

@@ -22,8 +22,13 @@ window.App = (function (window, document) {
     return cmdRegistry;
   }
 
-  function getCurrentCmd(cmd) {
-    return cmd.subcommands.length > 0 ? cmd.subcommands[0] : cmd;
+  function showFirstCmd(cmd) {
+    if (cmd.subcommands.length === 0) {
+      return;
+    }
+    let tabTrigger = document.getElementById(`${cmd.subcommands[0].name}-tab`);
+    let tab = new bootstrap.Tab(tabTrigger);
+    tab.show();
   }
 
   function setupFormSubmitListener(onSubmit) {
@@ -94,6 +99,15 @@ window.App = (function (window, document) {
     });
   }
 
+  function getCommandHierarchy(cmd, cmdRegistry) {
+    let cmdList = [cmd.name];
+    while (cmd.parent_cmd !== null) {
+      cmd = cmdRegistry[cmd.parent_cmd];
+      cmdList.push(cmd.name);
+    }
+    return cmdList.reverse();
+  }
+
   function onSubmit(ws, cmdRegistry, event, form) {
     const cmd = cmdRegistry[form.dataset.command];
     const args = [];
@@ -104,7 +118,7 @@ window.App = (function (window, document) {
       }
     }
     let cmdLine = {
-      commands: [cmd.name],
+      commands: getCommandHierarchy(cmd, cmdRegistry),
       arguments: args,
     };
     console.log("Got CMD Line", cmdLine);
@@ -125,6 +139,7 @@ window.App = (function (window, document) {
   return {
     async init({ cmd }) {
       let _cmdRegistry = initCmdRegistry(cmd);
+      showFirstCmd(cmd);
       let ws;
       try {
         ws = await setupWS(onWSEvent);

@@ -27,32 +27,16 @@
     <div class="container">
       <main>
 	 <div class="py-2 text-center">
-	   <img class="d-block mx-auto mb-2"
-		src="" alt="" width="72" height="57">
 	   <h2>{{command_title(cmd.name)}}</h2>
 	   {% if cmd.help %}
 	     <p class="lead">{{cmd.help | d('')}}</p>
 	   {% endif %}
 	 </div>
-	 <div class="row g-2" >
-	   <div class="col">
-	     <form class="needs-validation" novalidate data-command="{{cmd.name}}">
-	       <div class="row g-3 justify-content-center">
-		 {% for param in cmd.params -%}
-		 <div class="col-md-8">
-		   {% include param.widget.path %}
-		 </div>
-		 {% endfor %}
-		 <hr class="my-3">
-		 <button
-		   class="w-50 btn btn-primary btn-lg"
-		   type="submit"
-		   data-command="{{cmd.name}}"
-		  >Submit</button>
-	       </div>
-	     </form>
-	   </div>
-	 </div>
+	 {% if cmd.subcommands %}
+	   {% include 'group.html' %}
+	 {% else %}
+	   {% include 'argForm.html' %}
+	 {% endif %}
        </main>
        <script>
 	 {% include_raw "js/app.js" %}
